@@ -68,7 +68,7 @@ Clarinet.test({
 
     const block2 = chain.mineBlock([]);
 
-    const blockSender = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 3000000000000, lockPeriod)]); // same for sender stacked
+    const blockSender = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 500000000000, lockPeriod)]); // same for sender stacked
     // change the line above to 1000000000000 to get err u303 a.k.a "Stacking amount must be greater than 2M"
 
     // // get the current block height
@@ -97,5 +97,9 @@ Clarinet.test({
         
     console.log("cannot send it to receiver if receiver is not a stacker.......but stacker is.", block4.receipts[0].events); // this throws u300 because sender doesn't have a userId and needs to interact with contract first!
     console.log("isn't it?", block4.receipts[0].result);
+    console.log("yes it is...", block4.receipts);
+    console.log("detail 00000...", block4.receipts[0].events[0]);
+    console.log("details 11111...", block4.receipts[0].events[1]);
+    console.log("details 22222...", block4.receipts[0].events[2]);
   },
 });

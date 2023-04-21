@@ -9,14 +9,25 @@
 ;; Define NFT
 (define-non-fungible-token crypto-twins uint) ;; 
 
+;; we want 3 tiers of the NFTs
+;; maybe 200 tiers BTC
+;; 400 tier STX
+;; 400 tier Citycoin
+;; do we create a map for each NFT where tier is BTC, STX or CC and score is a hodl score?
+(define-map tier uint { tier:  (string-ascii 3), score-height: uint})
+;; then when we mint, we mint from 1 to 200 for BTC, 201 to 600 for STX and 601 to 1000 for CC
+;; and we record the block-height of the minting or buying/transfering 
+;; and the score is the current-block-height minus the block-height of the minting or buying/transfering
+
+
 ;; Error messages
 (define-constant ERR_INVALID_USER (err u300))
 (define-constant ERR-MINTED-OUT (err u301)) 
 (define-constant ERR-COULD-NOT-MINT (err u302)) 
-(define-constant ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED (err u303)) ;; doesn't pass the test of the golden BTC stacking standard
+(define-constant ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN (err u303)) ;; doesn't pass the test of the golden BTC stacking standard
 (define-constant BTC-STACKING-CLUB u2000000000000)
-(define-constant STX-STACKING-CLUB u2000000000000)
-(define-constant ETH-STACKING-CLUB u2000000000000)
+(define-constant STX-STACKING-CLUB u1000000000000)
+(define-constant CC-STACKING-CLUB u500000000000)
 
 ;; advance_chain_tip 1000 (because CC starts at block 50)
 
@@ -24,7 +35,7 @@
 (impl-trait .sip-09.nft-trait)
 
 ;; Collection limit
-(define-constant collection-limit u200)
+(define-constant collection-limit u1000)
 
 ;; Root URI
 (define-constant collection-root-uri "ipfs://ipfs/QmYcrELFT5c9pjSygFFXk8jfVMHB5cBoWJDGaTvrP/")
@@ -57,6 +68,7 @@
     )
 )
 
+
 ;; get token owner
 (define-read-only (get-token-owner (id uint))
     (ok (nft-get-owner? crypto-twins id))
@@ -83,15 +95,40 @@
             (total-stacked (+ nyc-is-stacked mia-is-stacked))
         )
 
-        (print total-stacked) ;; you can print this to the console, see how it displays in test 
-
-        ;; assert that total-stacked is higher than 2m, i.e this is a free mint for stackers of more than 2 million citycoins combined
-        (asserts! (>= total-stacked BTC-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
+        ;; (print total-stacked) ;; you can print this to the console, see how it displays in test 
+        
+        ;; assert that total-stacked is higher than 500k, i.e this is a free mint for stackers of more than 2 million citycoins combined
+        (asserts! (>= total-stacked CC-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN);; at min you're a CCoiner to become a crypto-twin!
 
         (asserts! (is-eq tx-sender sender) (err u1))
-        (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
-        ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
-    )
+
+        
+        (print userId)
+
+        (if (>= total-stacked BTC-STACKING-CLUB)
+            (begin 
+                (map-set tier id { tier: "BTC", score-height: block-height })
+                (print "BTC")
+                (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
+                ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
+            )
+            (if (>= total-stacked STX-STACKING-CLUB)
+                (begin
+                    (map-set tier id { tier: "STX", score-height: block-height })
+                    (print "STX")
+                    (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
+                    ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
+                )
+                (begin 
+                    (map-set tier id { tier: "CC", score-height: block-height })
+                    (print "CC")
+                    (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
+                    ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
+                )
+            )
+        )
+        ;; (ok true)
+    ) 
 )
 
 ;; in the transfer above, we verify they have enough tokens to receive the NFT before we transfer it
@@ -136,19 +173,39 @@
         ;; (print total-stacked) ;; you can print this to the console, see how it displays in test 
 
         ;; assert that total-stacked is higher than 2m, i.e this is a free mint for stackers of more than 2 million citycoins combined
-        (asserts! (>= total-stacked BTC-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
+        (asserts! (>= total-stacked CC-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN)
 
         ;; print that this is a free mint
         (print "free mint")
+        (print userId)
 
-        ;; Mint crypto-twins
-        (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
 
+        (if (>= total-stacked BTC-STACKING-CLUB)
+            (begin 
+                (map-set tier current-index { tier: "BTC", score-height: block-height })
+                ;; Mint crypto-twins
+                (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT) 
+            )
+            (if (>= total-stacked STX-STACKING-CLUB)
+                (begin
+                    (map-set tier current-index { tier: "STX", score-height: block-height })
+                    ;; Mint crypto-twins
+                    (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
+                )
+                (begin 
+                    (map-set tier current-index { tier: "CC", score-height: block-height })
+                    ;; Mint crypto-twins
+                    (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
+                )
+            )
+        )
         ;; var set current-index
-        (ok (var-set collection-index next-index))
+        ;; (ok (var-set collection-index next-index))
+        (ok (map-get? tier u1)
     )
-
+  )
 )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;  Helper Func ;;;;;;;;;;

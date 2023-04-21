@@ -23,7 +23,7 @@
 (define-constant MAX_REWARD_CYCLES u32)
 ;; MAINNET: u2100
 ;; TESTNET: u1050
-(define-constant REWARD_CYCLE_LENGTH u10) ;; I am changing this to 10 for testing purposes because I don't know how to advance 2100 in typescript
+(define-constant REWARD_CYCLE_LENGTH u2100) ;; I am changing this to 10 for testing purposes because I don't know how to advance 2100 in typescript
 ;; MAINNET: u666050
 ;; TESTNET: u2000000
 (define-constant FIRST_STACKING_BLOCK u50) ;; I am changing this to u1 instead of u50 because I don't know how to advance chain tip in typescript

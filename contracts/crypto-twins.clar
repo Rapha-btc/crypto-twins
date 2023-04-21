@@ -13,8 +13,10 @@
 (define-constant ERR_INVALID_USER (err u300))
 (define-constant ERR-MINTED-OUT (err u301)) 
 (define-constant ERR-COULD-NOT-MINT (err u302)) 
-(define-constant ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED (err u303)) 
-(define-constant MIN-STACKING-CLUB u2000000000000)
+(define-constant ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED (err u303)) ;; doesn't pass the test of the golden BTC stacking standard
+(define-constant BTC-STACKING-CLUB u2000000000000)
+(define-constant STX-STACKING-CLUB u2000000000000)
+(define-constant ETH-STACKING-CLUB u2000000000000)
 
 ;; advance_chain_tip 1000 (because CC starts at block 50)
 
@@ -61,14 +63,44 @@
 )
 
 ;; Transfer
+(define-public (transfer (id uint) (sender principal) (receiver principal))
+      (let 
+    
+        (
+            ;; cycle is the current cycle that can be retreived from ccd007-citycoin-stacking in contracts/extensions and using the read only function get-current-reward-cycle
+            (cycle (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd007-citycoin-stacking get-current-reward-cycle))
+            ;; now we need userId from RECEIVER
+            (userId (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd003-user-registry get-user-id receiver) ERR_INVALID_USER))
+            ;; now we need their total citycoin stacked
+            ;; first nyc
+            (stacker-nyc (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd007-citycoin-stacking get-stacker u2 cycle userId))
+            (nyc-is-stacked (get stacked stacker-nyc))
+            
+            ;; then mia
+            (stacker-mia (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd007-citycoin-stacking get-stacker u1 cycle userId))
+            (mia-is-stacked (get stacked stacker-mia))
+            ;; add the 2 together
+            (total-stacked (+ nyc-is-stacked mia-is-stacked))
+        )
 
-(define-public (transfer (id uint) (sender principal) (receiver principal)) 
-    (begin
+        (print total-stacked) ;; you can print this to the console, see how it displays in test 
+
+        ;; assert that total-stacked is higher than 2m, i.e this is a free mint for stackers of more than 2 million citycoins combined
+        (asserts! (>= total-stacked BTC-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
+
         (asserts! (is-eq tx-sender sender) (err u1))
         (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
         ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
     )
 )
+
+;; in the transfer above, we verify they have enough tokens to receive the NFT before we transfer it
+;; is this is enough, or do we need to add a contract for market place non-custodial
+;; for the transfer function, it's maybe a little more complex than the trivial case, to include non-custodial market place?
+;; yes, you could check that the user listing the nft has enough tokens, and that the user buying the nft has enough
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;  Core Functions ;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -79,9 +111,9 @@
     
         (
             ;; cycle is the current cycle that can be retreived from ccd007-citycoin-stacking in contracts/extensions and using the read only function get-current-reward-cycle
-            (cycle (contract-call? .ccd007-citycoin-stacking get-current-reward-cycle))
+            (cycle (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd007-citycoin-stacking get-current-reward-cycle))
             ;; now we need userId from tx-sender
-            (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_USER))
+            (userId (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd003-user-registry get-user-id user) ERR_INVALID_USER))
             ;; now we need their total citycoin stacked
             ;; first nyc
             (stacker-nyc (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd007-citycoin-stacking get-stacker u2 cycle userId))
@@ -101,10 +133,10 @@
         ;; assert that current index lower than collection limit
         (asserts! (<= current-index collection-limit) ERR-MINTED-OUT)
 
-        (print total-stacked) ;; you can print this to the console, see how it displays in test 
+        ;; (print total-stacked) ;; you can print this to the console, see how it displays in test 
 
         ;; assert that total-stacked is higher than 2m, i.e this is a free mint for stackers of more than 2 million citycoins combined
-        (asserts! (>= total-stacked MIN-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
+        (asserts! (>= total-stacked BTC-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
 
         ;; print that this is a free mint
         (print "free mint")
@@ -114,12 +146,9 @@
 
         ;; var set current-index
         (ok (var-set collection-index next-index))
-        ;; (ok mia-is-stacked)
     )
 
 )
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;  Helper Func ;;;;;;;;;;

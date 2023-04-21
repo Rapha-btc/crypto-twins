@@ -17,7 +17,7 @@ export class CCD007CityStacking {
   name: string;
   static readonly ErrCode = ErrCode;
   static readonly MAX_REWARD_CYCLES = 32;
-  static readonly REWARD_CYCLE_LENGTH = 21; // TESTNET: 1050 - I am changing this from 2100 to 21 because I don't know how to advance chain tip in typescript to 2100
+  static readonly REWARD_CYCLE_LENGTH = 2100; // TESTNET: 1050 - I am changing this from 2100 to 21 because I don't know how to advance chain tip in typescript to 2100
   static readonly FIRST_STACKING_BLOCK = 50; // MAINNET: 666050, TESTNET: 2000000
   chain: Chain;
   deployer: Account;

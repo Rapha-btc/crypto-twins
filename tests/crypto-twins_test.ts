@@ -48,7 +48,8 @@ Clarinet.test({
     passProposal(chain, accounts, PROPOSALS.TEST_CCD005_CITY_DATA_002);
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_007);
     // 009 mints mia to user1 and user2 - and I propose to mint 4m!
-    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009);
+    passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_009); // mint some MIA for sender but only 1m please (updated)
+
     // 010 adds the token contract to the treasury allow list
     passProposal(chain, accounts, PROPOSALS.TEST_CCD007_CITY_STACKING_010);
     gt.getBalance(user1.address).result.expectOk().expectUint(4000000000000);
@@ -67,12 +68,14 @@ Clarinet.test({
 
     const block2 = chain.mineBlock([]);
 
+    const blockSender = chain.mineBlock([ccd007CityStacking.stack(sender, miaCityName, 3000000000000, lockPeriod)]); // same for sender stacked
+    // change the line above to 1000000000000 to get err u303 a.k.a "Stacking amount must be greater than 2M"
+
     // // get the current block height
     // const currentHeight = await clarity.rpc.getBlockHeight();
 
-    // // advance the chain tip by 2101 blocks
-    // // because when you stack in u0 cycle it only starts to be stacked in u1?!?!?!
-    // await clarity.rpc.advancedToBlock(currentHeight + 2101);
+    // // advance the chain tip by 2 cycles!
+    chain.mineEmptyBlock(CCD007CityStacking.REWARD_CYCLE_LENGTH * 2 + 10);
 
 
     // okay now user1 has stacked 2m MIA for 10 cycles, let's print a crypto-twin to user1
@@ -84,6 +87,15 @@ Clarinet.test({
           ]);
     // now let's verify that user 1 has a gold crypto-twin
     console.log("get me a CC NFT, and a gold one please........", block3.receipts[0].events);
+    console.log("get me a CC NFT, and a gold one please........", block3.receipts[0].result);
+    // it's green, it's a free mint but I still don't know how to advance chain tip by 2100 blocks in typescript
+
+    // now let's try to transfer it to a receiver that doesn't have enough tokens
+    let block4 = chain.mineBlock([
+        Tx.contractCall(`${sender.address}.crypto-twins`, "transfer", [types.uint(1), types.principal(user1.address), types.principal(sender.address)], user1.address) 
+          ]);
         
+    console.log("cannot send it to receiver if receiver is not a stacker.......but stacker is.", block4.receipts[0].events); // this throws u300 because sender doesn't have a userId and needs to interact with contract first!
+    console.log("isn't it?", block4.receipts[0].result);
   },
 });

@@ -10,14 +10,12 @@
 (define-non-fungible-token crypto-twins uint) ;; 
 
 ;; we want 3 tiers of the NFTs
-;; maybe 200 tiers BTC
-;; 400 tier STX
-;; 400 tier Citycoin
-;; do we create a map for each NFT where tier is BTC, STX or CC and score is a hodl score?
-(define-map tier uint { tier:  (string-ascii 3), score-height: uint})
-;; then when we mint, we mint from 1 to 200 for BTC, 201 to 600 for STX and 601 to 1000 for CC
-;; and we record the block-height of the minting or buying/transfering 
-;; and the score is the current-block-height minus the block-height of the minting or buying/transfering
+;; what if an NFT can change tiers as a function of how much a Ccoiner stacks?
+;; tier tresholds of {2m, 1m, 500k} for respectively tiers {BTC, STX, CC}, it's turtles all the way down!
+;; do we create a map for each NFT where tier is BTC, STX or CC and score-ref-height a reference to calculate the hodl score?
+(define-map tier uint { tier:  (string-ascii 3), score-ref-height: uint})
+;; then when we mint or when we transfer, we record the block-height and the tier (the tier is a function of the total-stacked of the recipient or minter)
+;; and the score can be deduce by substracting the current-block-height to the score-ref-height
 
 
 ;; Error messages
@@ -107,20 +105,20 @@
 
         (if (>= total-stacked BTC-STACKING-CLUB)
             (begin 
-                (map-set tier id { tier: "BTC", score-height: block-height })
+                (map-set tier id { tier: "BTC", score-ref-height: block-height })
                 (print "BTC")
                 (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
                 ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
             )
             (if (>= total-stacked STX-STACKING-CLUB)
                 (begin
-                    (map-set tier id { tier: "STX", score-height: block-height })
+                    (map-set tier id { tier: "STX", score-ref-height: block-height })
                     (print "STX")
                     (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
                     ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
                 )
                 (begin 
-                    (map-set tier id { tier: "CC", score-height: block-height })
+                    (map-set tier id { tier: "CC", score-ref-height: block-height })
                     (print "CC")
                     (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
                     ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
@@ -182,18 +180,18 @@
 
         (if (>= total-stacked BTC-STACKING-CLUB)
             (begin 
-                (map-set tier current-index { tier: "BTC", score-height: block-height })
+                (map-set tier current-index { tier: "BTC", score-ref-height: block-height })
                 ;; Mint crypto-twins
                 (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT) 
             )
             (if (>= total-stacked STX-STACKING-CLUB)
                 (begin
-                    (map-set tier current-index { tier: "STX", score-height: block-height })
+                    (map-set tier current-index { tier: "STX", score-ref-height: block-height })
                     ;; Mint crypto-twins
                     (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
                 )
                 (begin 
-                    (map-set tier current-index { tier: "CC", score-height: block-height })
+                    (map-set tier current-index { tier: "CC", score-ref-height: block-height })
                     ;; Mint crypto-twins
                     (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
                 )

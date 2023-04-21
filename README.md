@@ -1,3 +1,4 @@
+![PhotoCollage_1681518941402](https://user-images.githubusercontent.com/6700158/233514661-01c692ab-2bf1-414a-a522-501551687cef.jpg)
 # A simple CC NFT mintable for free by stackers of more than 2 million CC stacked combined over MIA and NYC
 Rafa has created a fork of this project. 
 
@@ -18,8 +19,6 @@ This repository contains the base contract for the CityCoins DAO and the related
 [More information can be found in the documentation.](https://docs.citycoins.co)
 
 After the implementation of both CCIPs this repository will supersede the protocol contracts in [citycoins/contracts](https://github.com/citycoins/contracts).
-
-![PhotoCollage_1681518941402](https://user-images.githubusercontent.com/6700158/233514661-01c692ab-2bf1-414a-a522-501551687cef.jpg)
 
 
 ## Code Management

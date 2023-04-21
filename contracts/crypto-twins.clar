@@ -97,10 +97,12 @@
         )
 
         ;; assert that current index lower than collection limit
-        (asserts! (< current-index collection-limit) ERR-MINTED-OUT)
+        (asserts! (<= current-index collection-limit) ERR-MINTED-OUT)
+
+        (print total-stacked) ;; you can print this to the console, see how it displays in test 
 
         ;; assert that total-stacked is higher than 2m, i.e this is a free mint for stackers of more than 2 million citycoins combined
-        (asserts! (> total-stacked u2000000000) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
+        ;; (asserts! (>= total-stacked u2000000000) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
 
         ;; print that this is a free mint
         (print "free mint")
@@ -109,7 +111,8 @@
         (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
 
         ;; var set current-index
-        (ok (var-set collection-index next-index))
+        ;; (ok (var-set collection-index next-index))
+        (ok total-stacked)
     )
 
 )

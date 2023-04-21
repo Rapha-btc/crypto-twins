@@ -14,6 +14,8 @@
 (define-constant ERR-MINTED-OUT (err u301)) 
 (define-constant ERR-COULD-NOT-MINT (err u302)) 
 (define-constant ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED (err u303)) 
+(define-constant MIN-STACKING-CLUB u2000000000000)
+
 ;; advance_chain_tip 1000 (because CC starts at block 50)
 
 ;; Adhere to SIP09
@@ -82,11 +84,11 @@
             (userId (unwrap! (contract-call? .ccd003-user-registry get-user-id user) ERR_INVALID_USER))
             ;; now we need their total citycoin stacked
             ;; first nyc
-            (stacker-nyc (contract-call? .ccd007-citycoin-stacking get-stacker u2 cycle userId))
+            (stacker-nyc (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd007-citycoin-stacking get-stacker u2 cycle userId))
             (nyc-is-stacked (get stacked stacker-nyc))
             
             ;; then mia
-            (stacker-mia (contract-call? .ccd007-citycoin-stacking get-stacker u1 cycle userId))
+            (stacker-mia (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ccd007-citycoin-stacking get-stacker u1 cycle userId))
             (mia-is-stacked (get stacked stacker-mia))
             ;; add the 2 together
             (total-stacked (+ nyc-is-stacked mia-is-stacked))
@@ -102,7 +104,7 @@
         (print total-stacked) ;; you can print this to the console, see how it displays in test 
 
         ;; assert that total-stacked is higher than 2m, i.e this is a free mint for stackers of more than 2 million citycoins combined
-        ;; (asserts! (>= total-stacked u2000000000) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
+        (asserts! (>= total-stacked MIN-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN-2-MILLION-CITYCOINS-COMBINED)
 
         ;; print that this is a free mint
         (print "free mint")
@@ -111,8 +113,8 @@
         (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
 
         ;; var set current-index
-        ;; (ok (var-set collection-index next-index))
-        (ok total-stacked)
+        (ok (var-set collection-index next-index))
+        ;; (ok mia-is-stacked)
     )
 
 )

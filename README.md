@@ -1,10 +1,21 @@
 ![PhotoCollage_1681518941402](https://user-images.githubusercontent.com/6700158/233514661-01c692ab-2bf1-414a-a522-501551687cef.jpg)
-# A simple CC NFT mintable for free by stackers of more than 2 million CC stacked combined over MIA and NYC
-Rafa has created a fork of this project. 
+# Free mint for stackers of more than 2 million CC (combined MIA + NYC)
 
-"My goal is to have fun while practicing my clarity skills and providing assistance to Manie, whom I met in the CC discord channel."
+"My goal is to have fun while practicing my clarity skills and providing assistance to Manie, whom I met in the CC discord channel." Rapha-btc
 
  You can view Manie's NFT images at the following link:  https://discord.com/channels/856920147381190717/905508969773166633/1096595208252162078
+
+ If you are new to Clarity and would like to test the contracts, you can run "clarinet console" from the contracts folder and perform the following steps:
+
+ 1. Advance the chain tip by 1k blocks, because FIRST_STACKING_BLOCK u50
+
+ <h6>::advance_chain_tip 1000</h6>
+
+ 2. Mint yourself some CC, more than 2 million, and stack them
+
+ 3. Mint yourself 1 crypto-twin NFT
+
+ <h6>(contract-call? .crypto-twins mint 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)</h6>
  
 # CityCoins Protocol
 

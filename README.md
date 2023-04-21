@@ -1,3 +1,10 @@
+# A simple CC NFT mintable for free by stackers of more than 2 million CC stacked combined over MIA and NYC
+Rafa has created a fork of this project. 
+
+"My goal is to have fun while practicing my clarity skills and providing assistance to Manie, whom I met in the CC discord channel."
+
+ You can view Manie's NFT images at the following link:  https://discord.com/channels/856920147381190717/905508969773166633/1096595208252162078
+ 
 # CityCoins Protocol
 
 ## Introduction

@@ -150,7 +150,9 @@
       (claimable (get claimable stacker))
     )
     (asserts! (or (not (var-get stackingEnabled)) (< cycleId (get-reward-cycle burn-block-height))) ERR_INCOMPLETE_CYCLE)
-    (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM)
+    (asserts! (or (> reward u0) (> claimable u0)) ERR_NOTHING_TO_CLAIM);; Rafa: claimable is positive in use case tested, which ends up setting stacked to u0 before reward is sent by poolOperator
+    ;; Rafa: when user tries to claim after poolOperator has sent reward, this assert fails (and stacked was already set to u0)
+    
     ;; contract addresses hardcoded for this version
     (and (is-eq cityName "mia")
       (begin

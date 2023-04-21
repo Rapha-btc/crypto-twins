@@ -19,6 +19,9 @@ This repository contains the base contract for the CityCoins DAO and the related
 
 After the implementation of both CCIPs this repository will supersede the protocol contracts in [citycoins/contracts](https://github.com/citycoins/contracts).
 
+![PhotoCollage_1681518941402](https://user-images.githubusercontent.com/6700158/233514661-01c692ab-2bf1-414a-a522-501551687cef.jpg)
+
+
 ## Code Management
 
 ### Prerequisites

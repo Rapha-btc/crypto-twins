@@ -1,6 +1,6 @@
 ![proof of stacking](https://user-images.githubusercontent.com/6700158/233790376-54e59c21-c937-49c1-aeae-d2c94ef831b4.jpg)
 
-# Free mint for stackers of more than 2 million CC (combined MIA + NYC)
+# Free mint for stackers of more than 500k CC (combined MIA + NYC)
 
 "My goal is to have fun while practicing my clarity skills and providing assistance to Manie, whom I met in the CC discord channel." Rapha-btc
 

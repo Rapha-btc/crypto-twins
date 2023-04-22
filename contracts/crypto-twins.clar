@@ -1,3 +1,8 @@
+;; To-do list:
+;; market place
+;; ability to change the treshholds by a vote of citycoiners
+;; sizeable bitcoin call fold/ map functions
+
 
 ;; Crypto-twins is a project by Manie
 ;; Rafa is simply helping Manie with the code
@@ -9,6 +14,8 @@
 ;; Define NFT
 (define-non-fungible-token crypto-twins uint) ;; 
 
+;; Define maps
+
 ;; we want 3 tiers of the NFTs
 ;; what if an NFT can change tiers as a function of how much a Ccoiner stacks?
 ;; tier tresholds of {2m, 1m, 500k} for respectively tiers {BTC, STX, CC}, it's turtles all the way down!
@@ -17,6 +24,7 @@
 ;; then when we mint or when we transfer, we record the block-height and the tier (the tier is a function of the total-stacked of the recipient or minter)
 ;; and the score can be deduce by substracting the current-block-height to the score-ref-height
 
+(define-map limited-edition principal { vip: (string-ascii 3) }) ;; once it's set it locks the user out of the minting process (1 NFT per account)
 
 ;; Error messages
 (define-constant ERR_INVALID_USER (err u300))
@@ -107,24 +115,23 @@
             (begin 
                 (map-set tier id { tier: "BTC", score-ref-height: block-height })
                 (print "BTC")
-                (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
-                ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
+
             )
             (if (>= total-stacked STX-STACKING-CLUB)
                 (begin
                     (map-set tier id { tier: "STX", score-ref-height: block-height })
                     (print "STX")
-                    (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
-                    ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
                 )
                 (begin 
                     (map-set tier id { tier: "CC", score-ref-height: block-height })
                     (print "CC")
-                    (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
-                    ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
                 )
             )
         )
+
+        (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
+        ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
+
         ;; (ok true)
     ) 
 )
@@ -176,33 +183,27 @@
         ;; print that this is a free mint
         (print "free mint")
         (print userId)
+        
+        ;; 1 NFT per account
+        (map-insert limited-edition user {vip: "yes"})  ;; this should exit if the user already has an NFT
 
 
         (if (>= total-stacked BTC-STACKING-CLUB)
-            (begin 
-                (map-set tier current-index { tier: "BTC", score-ref-height: block-height })
-                ;; Mint crypto-twins
-                (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT) 
-            )
+            (map-set tier current-index { tier: "BTC", score-ref-height: block-height })
             (if (>= total-stacked STX-STACKING-CLUB)
-                (begin
-                    (map-set tier current-index { tier: "STX", score-ref-height: block-height })
-                    ;; Mint crypto-twins
-                    (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
-                )
-                (begin 
-                    (map-set tier current-index { tier: "CC", score-ref-height: block-height })
-                    ;; Mint crypto-twins
-                    (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)
-                )
+                (map-set tier current-index { tier: "STX", score-ref-height: block-height })
+                (map-set tier current-index { tier: "CC", score-ref-height: block-height })
             )
         )
+
+        ;; Mint crypto-twins
+        (unwrap! (nft-mint? crypto-twins current-index tx-sender) ERR-COULD-NOT-MINT)   
+
         ;; var set current-index
-        ;; (ok (var-set collection-index next-index))
-        (ok (map-get? tier u1)
+        (var-set collection-index next-index)
+        (ok (map-get? tier u1))
     )
   )
-)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;

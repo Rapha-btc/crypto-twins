@@ -3,10 +3,10 @@
 
 "My goal is to have fun while practicing my clarity skills and providing assistance to Manie, whom I met in the CC discord channel." Rapha-btc
 
- You can view Manie's NFT images at the following link:  https://discord.com/channels/856920147381190717/905508969773166633/1096595208252162078
-
  If you are new to Clarity and would like to test the contracts, you can run "clarinet test tests/crypto-twins_test.ts" from the contracts folder.
  If you would like to collaborate and share ideas and feedback, feel free to do so as well. This is an open source little project!
+
+ You can view Manie's NFT images at the following link:  https://discord.com/channels/856920147381190717/905508969773166633/1096595208252162078
  
 # CityCoins Protocol
 

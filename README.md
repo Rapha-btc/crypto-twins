@@ -1,4 +1,5 @@
-![PhotoCollage_1681518941402](https://user-images.githubusercontent.com/6700158/233514661-01c692ab-2bf1-414a-a522-501551687cef.jpg)
+![proof of stacking](https://user-images.githubusercontent.com/6700158/233790376-54e59c21-c937-49c1-aeae-d2c94ef831b4.jpg)
+
 # Free mint for stackers of more than 2 million CC (combined MIA + NYC)
 
 "My goal is to have fun while practicing my clarity skills and providing assistance to Manie, whom I met in the CC discord channel." Rapha-btc
@@ -7,6 +8,7 @@
  If you would like to collaborate and share ideas and feedback, feel free to do so as well. This is an open source little project!
 
  You can view Manie's NFT images at the following link:  https://discord.com/channels/856920147381190717/905508969773166633/1096595208252162078
+![PhotoCollage_1681518941402](https://user-images.githubusercontent.com/6700158/233514661-01c692ab-2bf1-414a-a522-501551687cef.jpg)
  
 # CityCoins Protocol
 

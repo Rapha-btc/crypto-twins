@@ -5,17 +5,8 @@
 
  You can view Manie's NFT images at the following link:  https://discord.com/channels/856920147381190717/905508969773166633/1096595208252162078
 
- If you are new to Clarity and would like to test the contracts, you can run "clarinet console" from the contracts folder and perform the following steps:
-
- 1. Advance the chain tip by 1k blocks, because FIRST_STACKING_BLOCK u50
-
- <h6>::advance_chain_tip 1000</h6>
-
- 2. Mint yourself some CC, more than 2 million, and stack them
-
- 3. Mint yourself 1 crypto-twin NFT
-
- <h6>(contract-call? .crypto-twins mint 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)</h6>
+ If you are new to Clarity and would like to test the contracts, you can run "clarinet test tests/crypto-twins_test.ts" from the contracts folder.
+ If you would like to collaborate and share ideas and feedback, feel free to do so as well. This is an open source little project!
  
 # CityCoins Protocol
 

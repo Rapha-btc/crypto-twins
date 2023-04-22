@@ -32,6 +32,7 @@ Clarinet.test({
     const ccd007CityStacking = new CCD007CityStacking(chain, sender, "ccd007-citycoin-stacking");
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const user1 = accounts.get("wallet_1")!;
+    const user2 = accounts.get("wallet_2")!;
     const amountStacked = 2200000000000;
     const targetCycle = 1;
     const cityId = 1;
@@ -85,9 +86,9 @@ Clarinet.test({
         Tx.contractCall(`${sender.address}.crypto-twins`, "mint", [types.principal(user1.address)], user1.address) 
         // Tx.contractCall(`${sender.address}.crypto-twins`, "mint", ["'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5"], user1.address)
           ]);
-    // now let's verify that user 1 has a gold crypto-twin
-    console.log("get me a CC NFT, and a gold one please........", block3.receipts[0].events);
-    console.log("get me a CC NFT, and a gold one please........", block3.receipts[0].result);
+    // now let's verify that user 1 has a gold crypto-twin 
+    console.log("get me a CC NFT, and a BTC tier one please........", block3.receipts[0].events);
+    console.log("get me a CC NFT please........", block3.receipts[0].result);
     // it's green, it's a free mint but I still don't know how to advance chain tip by 2100 blocks in typescript
 
     // now let's try to transfer it to a receiver that doesn't have enough tokens
@@ -96,10 +97,59 @@ Clarinet.test({
           ]);
         
     console.log("cannot send it to receiver if receiver is not a stacker.......but stacker is.", block4.receipts[0].events); // this throws u300 because sender doesn't have a userId and needs to interact with contract first!
-    console.log("isn't it?", block4.receipts[0].result);
-    console.log("yes it is...", block4.receipts);
-    console.log("detail 00000...", block4.receipts[0].events[0]);
-    console.log("details 11111...", block4.receipts[0].events[1]);
-    console.log("details 22222...", block4.receipts[0].events[2]);
+    // console.log("isn't it?", block4.receipts[0].result);
+    // console.log("yes it is...", block4.receipts);
+    console.log("detail 00000... userId ", block4.receipts[0].events[0]);
+    console.log("details 11111... NFT tier ", block4.receipts[0].events[1]);
+    console.log("details 22222...crypto-twin Id ", block4.receipts[0].events[2]);
+    
+    // now let's try to mint a 2nd one and it should fail for user1 because he already has minted one
+    let block5 = chain.mineBlock([
+      Tx.contractCall(`${sender.address}.crypto-twins`, "mint", [types.principal(user1.address)], user1.address) 
+        ]);
+    console.log("good try but you already minted one, why did you transfer it?! that won't game the limited edition... ", block5.receipts[0].result); // I don't know how to log the err u304
+    // block5.receipts[0].result.expectOk().expectBool(false)
+    block5.receipts[0].result.expectErr().expectUint(304); // good try but you already minted one, why did you transfer it?! that won't game the limited edition
+
+    // now let's try to mint a 2nd one and it should fail for user1 because he already has minted one
+    let block6 = chain.mineBlock([
+    Tx.contractCall(`${sender.address}.crypto-twins`, "mint", [types.principal(sender.address)], sender.address) 
+            ]);
+
+    // let's check that the deployer minted u2 now
+    console.log("deployer was transfered u1 and now mints u2... ", block6.receipts[0].result); 
+
+    // let's try for user1 to mint again
+    let block7 = chain.mineBlock([
+      Tx.contractCall(`${sender.address}.crypto-twins`, "mint", [types.principal(sender.address)], user1.address) 
+              ]);
+      block5.receipts[0].result.expectErr().expectUint(304);
+    
+    // let's send u1 and u2 to user1 from deployer
+    let block8 = chain.mineBlock([
+      Tx.contractCall(`${sender.address}.crypto-twins`, "transfer", [types.uint(1), types.principal(sender.address), types.principal(user1.address)], sender.address),
+      Tx.contractCall(`${sender.address}.crypto-twins`, "transfer", [types.uint(2), types.principal(sender.address), types.principal(user1.address)], sender.address) 
+        ]);
+        console.log("Sender is CC sends back u1 to user1 who is BTC tier...", block8.receipts[0].events); // this throws u300 because sender doesn't have a userId and needs to interact with contract first!
+        console.log("Sender is CC sends back u2 to user1 who is BTC tier...", block8.receipts[1].events); 
+        
+    // now the deployer wants to mint one again   
+    let block9 = chain.mineBlock([     
+      Tx.contractCall(`${sender.address}.crypto-twins`, "mint", [types.principal(sender.address)], sender.address) 
+        ]);
+        block9.receipts[0].result.expectErr().expectUint(304);
+    
+    // now we want deplyer to send to user1 what he deosnt have anymore
+    let block10 = chain.mineBlock([
+      Tx.contractCall(`${sender.address}.crypto-twins`, "transfer", [types.uint(1), types.principal(sender.address), types.principal(user1.address)], sender.address)
+        ]);
+        // console.log("user1 doesn't have u1 anymore...", block10.receipts[0].events); // this trows err u1 because user1 doesn't have u1 anymore
+        block10.receipts[0].result.expectErr().expectUint(1);
+    // now we want to send to user3 but user3 is not a stacker
+    let block11 = chain.mineBlock([
+      Tx.contractCall(`${sender.address}.crypto-twins`, "transfer", [types.uint(1), types.principal(user1.address), types.principal(user2.address)], user1.address)
+        ]);
+        // console.log("user2 is not a stacker...", block11.receipts[0].events); // this throws u300 because sender doesn't have a userId and needs to interact with contract first!
+        block11.receipts[0].result.expectErr().expectUint(300);
   },
 });

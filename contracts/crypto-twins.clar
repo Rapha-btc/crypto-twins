@@ -31,6 +31,7 @@
 (define-constant ERR-MINTED-OUT (err u301)) 
 (define-constant ERR-COULD-NOT-MINT (err u302)) 
 (define-constant ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN (err u303)) ;; doesn't pass the test of the golden BTC stacking standard
+(define-constant ERR-LIMITED-EDITION (err u304))
 (define-constant BTC-STACKING-CLUB u2000000000000)
 (define-constant STX-STACKING-CLUB u1000000000000)
 (define-constant CC-STACKING-CLUB u500000000000)
@@ -106,7 +107,7 @@
         ;; assert that total-stacked is higher than 500k, i.e this is a free mint for stackers of more than 2 million citycoins combined
         (asserts! (>= total-stacked CC-STACKING-CLUB) ERR-MINT-NOT-ALLOWED-FOR-STACKERS-OF-LESS-THAN);; at min you're a CCoiner to become a crypto-twin!
 
-        (asserts! (is-eq tx-sender sender) (err u1))
+        (asserts! (is-eq tx-sender sender) (err u1)) ;; can't transfer on behalf of owner
 
         
         (print userId)
@@ -132,7 +133,6 @@
         (nft-transfer? crypto-twins id sender receiver) ;; in this function sender is the owner of the NFT, 
         ;;but it can be called by anyone, hence check the tx-sender is the owner or abort!
 
-        ;; (ok true)
     ) 
 )
 
@@ -140,8 +140,6 @@
 ;; is this is enough, or do we need to add a contract for market place non-custodial
 ;; for the transfer function, it's maybe a little more complex than the trivial case, to include non-custodial market place?
 ;; yes, you could check that the user listing the nft has enough tokens, and that the user buying the nft has enough
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;  Core Functions ;;;;;;;
@@ -185,9 +183,10 @@
         (print userId)
         
         ;; 1 NFT per account
+        (asserts! (map-insert limited-edition user {vip: "yes"}) ERR-LIMITED-EDITION)
         (map-insert limited-edition user {vip: "yes"})  ;; this should exit if the user already has an NFT
 
-
+        
         (if (>= total-stacked BTC-STACKING-CLUB)
             (map-set tier current-index { tier: "BTC", score-ref-height: block-height })
             (if (>= total-stacked STX-STACKING-CLUB)
@@ -201,7 +200,9 @@
 
         ;; var set current-index
         (var-set collection-index next-index)
-        (ok (map-get? tier u1))
+        ;; (ok (map-get? tier current-index))
+        ;; (ok (map-get? limited-edition user))
+        (ok current-index)
     )
   )
 

@@ -33,7 +33,7 @@ Clarinet.test({
     const gt = new CCEXTGovernanceToken(chain, sender, "test-ccext-governance-token-mia");
     const user1 = accounts.get("wallet_1")!;
     const user2 = accounts.get("wallet_2")!;
-    const amountStacked = 2200000000000;
+    const amountStacked = 2000000000000;
     const targetCycle = 1;
     const cityId = 1;
     const userId = 1;
@@ -60,7 +60,7 @@ Clarinet.test({
 
     // assert
     block.receipts[0].result.expectOk().expectBool(true);
-    gt.getBalance(user1.address).result.expectOk().expectUint(1800000000000); //4m-2.2m
+    gt.getBalance(user1.address).result.expectOk().expectUint(2000000000000); //4m-2.2m
     gt.getBalance(EXTENSIONS.CCD002_TREASURY_MIA_STACKING).result.expectOk().expectUint(amountStacked);
     const expected = `{amountStacked: ${types.uint(amountStacked)}, cityId: u1, cityName: "mia", cityTreasury: ${sender.address}.${miaTreasuryName}, event: "stacking", firstCycle: ${types.uint(1)}, lastCycle: ${types.uint(targetCycle + lockPeriod - 1)}, lockPeriod: ${types.uint(lockPeriod)}, userId: ${types.uint(1)}}`;
     block.receipts[0].events.expectPrintEvent(`${sender.address}.ccd007-citycoin-stacking`, expected);
@@ -151,5 +151,8 @@ Clarinet.test({
         ]);
         // console.log("user2 is not a stacker...", block11.receipts[0].events); // this throws u300 because sender doesn't have a userId and needs to interact with contract first!
         block11.receipts[0].result.expectErr().expectUint(300);
+// test by changing the amounts to have all branches of CC, STX, BTC in transfer and mint = done and it works
+
+
   },
 });

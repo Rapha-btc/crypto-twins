@@ -107,7 +107,7 @@
     ;; contract addresses hardcoded for this version
     ;; MAINNET: 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
     ;; TESTNET: 'ST1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8WRH7C6H.miamicoin-token-v2
-    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft .test-ccext-governance-token-mia amount)))
+    (and (is-eq cityName "mia") (try! (contract-call? .ccd002-treasury-mia-stacking deposit-ft .test-ccext-governance-token-mia amount))) ;; false will continue but not exit, it's not asserts! did I clone the deployed code by the way?
     ;; MAINNET: 'SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-token-v2
     ;; TESTNET: 'STSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1D64KKHQ.newyorkcitycoin-token-v2
     (and (is-eq cityName "nyc") (try! (contract-call? .ccd002-treasury-nyc-stacking deposit-ft .test-ccext-governance-token-nyc amount)))
@@ -243,7 +243,7 @@
       (userStacked (get stacked stacker))
     )
     (if (and (or (not (var-get stackingEnabled)) (< cycle  (get-reward-cycle burn-block-height))) (> userStacked u0))
-      (some (/ (* (unwrap! (get reward cycleStats) (some u0)) userStacked) (get total cycleStats)))
+      (some (/ (* (unwrap! (get reward cycleStats) (some u0)) userStacked) (get total cycleStats))) ;; this is congruent with the deployed code (some u0)
       none
     )
   )
@@ -255,7 +255,7 @@
 
 ;; PRIVATE FUNCTIONS
 
-(define-private (stack-at-cycle (cityId uint) (userId uint) (amount uint) (first uint) (last uint) (target uint))
+(define-private (stack-at-cycle (cityId uint) (userId uint) (amount uint) (first uint) (last uint) (target uint)) ;; I understand everything here
   (let
     (
       (cycleStats (get-stacking-stats cityId target))

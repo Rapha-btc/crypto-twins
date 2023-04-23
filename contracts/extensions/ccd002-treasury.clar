@@ -74,7 +74,7 @@
       event: "deposit-ft",
       amount: amount,
       assetContract: (contract-of ft),
-      caller: contract-caller,
+      caller: contract-caller, ;; I still need to understand contract-caller versus tx-sender better
       recipient: TREASURY,
       sender: tx-sender
     })
@@ -179,8 +179,9 @@
 ;; READ ONLY FUNCTIONS
 
 (define-read-only (is-allowed (assetContract principal))
-  (default-to false (get-allowed-asset assetContract))
+  (default-to false (get-allowed-asset assetContract)) ;; evaluate get-allowed-asset assetContract and default to false if none
 )
+
 
 (define-read-only (get-allowed-asset (assetContract principal))
   (map-get? AllowedAssets assetContract)

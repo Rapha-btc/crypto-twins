@@ -1,6 +1,15 @@
 ;; To-do list:
 ;; market place
 ;; ability to change the treshholds by a vote of citycoiners
+
+;; // How to design the a hodl score to the user?
+;; // the lock-period is not kept, so simply look up stacked 1 cycle in the past and give more weight to the hodle score by adding the 2 stacked cycle -1 and current
+;; // allow user to vote if they have the NFT and give them a # of votes equal to 
+;; // BTC: stacked N + stacked N-1 /10
+;; // STX: stacked N + stacked N-1 /3
+;; // CC: stacked N + stacked N-1 
+;; // look up the repo by Wilson Bright shared by Ken Rogers
+
 ;; sizeable bitcoin call fold/ map functions
 
 

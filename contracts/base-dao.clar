@@ -34,7 +34,7 @@
 (define-public (set-extensions (extensionList (list 200 {extension: principal, enabled: bool})))
   (begin
     (try! (is-self-or-extension))
-    (ok (map set-extensions-iter extensionList))
+    (ok (map set-extensions-iter extensionList)) ;; is-self-or-extension > set extensions-iter
   )
 )
 
@@ -85,6 +85,6 @@
 (define-private (set-extensions-iter (item {extension: principal, enabled: bool}))
   (begin
     (print {event: "extension", enabled: (get enabled item), extension: (get extension item)})
-    (map-set Extensions (get extension item) (get enabled item))
+    (map-set Extensions (get extension item) (get enabled item)) ;; setting extension
   )
 )
